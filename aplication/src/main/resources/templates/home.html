@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+	<title>Dashboard</title>
+</head>
+
+<body class="bg-gray-100">
+	<nav class="navbar navbar-expand-lg bg-gradient-to-r from-blue-500 to-purple-500 p-4 shadow-lg">
+		<a class="navbar-brand text-white font-bold" href="#">Bem-vindo <span
+				th:text="${usuario.nome}">Usuário</span></a>
+		<button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarNav"
+			aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav ml-auto">
+				<form action="/logout" method="post">
+					<button type="submit" class="nav-link text-white hover:text-gray-200">Logout</button>
+				</form>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-md-6">
+				<h2 class="text-2xl font-bold mb-4">Suas Tarefas</h2>
+
+				<form th:action="@{/tarefa/adicionar}" method="post" class="mb-4">
+				    <div class="mb-3">
+				        <label for="descricao" class="form-label">Descrição da Nova Tarefa</label>
+				        <input type="text" id="descricao" name="descricao" class="form-control" placeholder="Digite a descrição da tarefa" required>
+				    </div>
+				    <div class="mb-3">
+				        <label for="dataInicio" class="form-label">Data de Início</label>
+				        <input type="date" id="dataInicio" name="dataInicio" class="form-control" required>
+				    </div>
+				    <div class="mb-3">
+				        <label for="dataLimite" class="form-label">Data Limite</label>
+				        <input type="date" id="dataLimite" name="dataLimite" class="form-control" required>
+				    </div>
+				    <button type="submit" class="btn btn-primary">Adicionar Tarefa</button>
+				</form>
+
+				<ul class="list-group">
+				    <li th:each="tarefa : ${tarefas}"
+				        class="list-group-item d-flex justify-content-between align-items-center"
+				        th:classappend="${tarefa.concluida} ? 'bg-green-100' : ''">
+				        <div class="flex-grow-1">
+				            <span th:text="${tarefa.descricao}">Descrição da Tarefa</span><br>
+				            <span th:text="${#temporals.format(tarefa.dataInicio, 'dd/MM/yyyy')}">Data Início</span><br>
+				            <span th:text="${#temporals.format(tarefa.dataLimite, 'dd/MM/yyyy')}">Data Limite</span>
+				        </div>
+				        <div>
+				            <form th:action="@{'/tarefa/concluir/' + ${tarefa.id}}" method="post" class="d-inline">
+				                <button type="submit" class="btn btn-success btn-sm" th:if="${!tarefa.concluida}">
+				                    Concluir
+				                </button>
+				            </form>
+				            <button th:if="${tarefa.concluida}" class="btn btn-secondary btn-sm disabled">Concluída</button>
+				        </div>
+				    </li>
+				</ul>
+			</div>
+			<div class="col-md-6">
+				<h2 class="text-2xl font-bold mb-4">Seus Hábitos</h2>
+
+				<form th:action="@{/habito/adicionar}" method="post" class="mb-4">
+				    <div class="mb-3">
+				        <label for="descricao" class="form-label">Descrição do Novo Hábito</label>
+				        <input type="text" id="descricao" name="descricao" class="form-control" placeholder="Digite a descrição do hábito" required>
+				    </div>
+				    <button type="submit" class="btn btn-primary">Adicionar Hábito</button>
+				</form>
+
+				<ul class="list-group">
+				    <li th:each="habito : ${habitos}"
+				        class="list-group-item d-flex justify-content-between align-items-center">
+				        <span th:text="${habito.descricao}">Descrição do Hábito</span>
+				        <form th:action="@{'/habito/marcar/' + ${habito.id}}" method="post" class="d-inline">
+				            <button type="submit" class="btn btn-primary btn-sm">Marcar como Feito</button>
+				        </form>
+				    </li>
+				</ul>
+
+				<h4 class="text-xl font-bold mt-4">Histórico de Hábitos</h4>
+				<ul class="list-group mt-2">
+				    <li th:each="historico : ${historicos}" class="list-group-item flex justify-between">
+				        <span th:text="${historico.habito.descricao}" class="flex-1">Descrição do Hábito</span>
+				        <span th:text="${historico.data}" class="flex-1 text-right">Data do Hábito</span>
+				    </li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
